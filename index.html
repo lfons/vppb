@@ -1,9 +1,466 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Hola món</title>
-  </head>
-  <body>
-    <h1>Hola des de el meu mòbil!</h1>
-  </body>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodiagnòstic VPPB</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        
+        .options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .option-btn {
+            background-color: #ecf0f1;
+            color: #333;
+            border: 1px solid #bdc3c7;
+        }
+        
+        .option-btn:hover {
+            background-color: #d6dbdf;
+        }
+        
+        .option-btn.selected {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .result {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        
+        .positive {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .negative {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .treatment-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .step-image {
+            width: 120px;
+            height: 120px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .restart-btn {
+            background-color: #9b59b6;
+        }
+        
+        .restart-btn:hover {
+            background-color: #8e44ad;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Autodiagnòstic del VPPB</h1>
+        <p>Aquesta aplicació us ajudarà a determinar si podeu tenir Vertigen Posicional Paroxístic Benigne (VPPB) i us mostrarà com realitzar la maniobra d'Epley per al seu tractament.</p>
+    </div>
+    
+    <!-- Secció de Preguntes -->
+    <div id="questions-section" class="container">
+        <h2>Responeu les següents preguntes:</h2>
+        
+        <div class="question" id="q1">
+            <h3>1) El cap gira o l'objecte gira?</h3>
+            <div class="options">
+                <button class="option-btn" data-value="1">Sí</button>
+                <button class="option-btn" data-value="0">No</button>
+            </div>
+        </div>
+        
+        <div class="question hidden" id="q2">
+            <h3>2) La durada del mareig ≤ 1 minut?</h3>
+            <div class="options">
+                <button class="option-btn" data-value="1">Sí</button>
+                <button class="option-btn" data-value="0">No</button>
+            </div>
+        </div>
+        
+        <div class="question hidden" id="q3">
+            <h3>3) El vèrtig es produeix en aixecar-se d'una posició de decúbit o al ficar-se al llit sobtadament?</h3>
+            <div class="options">
+                <button class="option-btn" data-value="1">Sí</button>
+                <button class="option-btn" data-value="0">No</button>
+            </div>
+        </div>
+        
+        <div class="question hidden" id="q4">
+            <h3>4) El vèrtig es produeix en girar-se a la posició de decúbit?</h3>
+            <div class="options">
+                <button class="option-btn" data-value="1">Sí</button>
+                <button class="option-btn" data-value="0">No</button>
+            </div>
+        </div>
+        
+        <div class="question hidden" id="q5">
+            <h3>5) Els símptomes desapareixen en mantenir la posició del cap?</h3>
+            <div class="options">
+                <button class="option-btn" data-value="1">Sí</button>
+                <button class="option-btn" data-value="0">No</button>
+            </div>
+        </div>
+        
+        <div class="navigation hidden" id="questions-nav">
+            <button id="prev-btn">Anterior</button>
+            <button id="next-btn">Següent</button>
+        </div>
+    </div>
+    
+    <!-- Secció de Resultats Positius -->
+    <div id="positive-result" class="container hidden">
+        <div class="result positive">
+            <h2>Possible VPPB detectat</h2>
+            <p>Segons les vostres respostes, és possible que tingueu Vertigen Posicional Paroxístic Benigne (VPPB).</p>
+            <p>La maniobra d'Epley us pot ajudar a tractar aquest trastorn. Feu clic al botó per aprendre com realitzar-la.</p>
+        </div>
+        <div class="navigation">
+            <button id="treatment-btn">Aprendre la Maniobra d'Epley</button>
+            <button class="restart-btn">Reiniciar Diagnòstic</button>
+        </div>
+    </div>
+    
+    <!-- Secció de Resultats Negatius -->
+    <div id="negative-result" class="container hidden">
+        <div class="result negative">
+            <h2>No es detecta VPPB</h2>
+            <p>Segons les vostres respostes, és poc probable que tingueu Vertigen Posicional Paroxístic Benigne (VPPB).</p>
+            <p>Si continueu experimentant símptomes de vertigen, us recomanem consultar amb un professional sanitari.</p>
+        </div>
+        <div class="navigation">
+            <button class="restart-btn">Reiniciar Diagnòstic</button>
+        </div>
+    </div>
+    
+    <!-- Secció de Tractament (Maniobra d'Epley) -->
+    <div id="treatment-section" class="container hidden">
+        <h2>Maniobra d'Epley</h2>
+        <p>Seguiu aquests passos per realitzar la maniobra d'Epley. Aquesta maniobra ajuda a reposicionar les partícules de l'orella interna que causen el vertigen.</p>
+        
+        <div class="treatment-step">
+            <div class="step-image">
+                <img src="/api/placeholder/120/120" alt="Pas 1">
+            </div>
+            <div class="step-content">
+                <h3>Pas 1: Posició inicial</h3>
+                <p>Seieu al llit amb el cap girat 45° cap al costat afectat. Manteniu aquesta posició durant 30 segons.</p>
+            </div>
+        </div>
+        
+        <div class="treatment-step">
+            <div class="step-image">
+                <img src="/api/placeholder/120/120" alt="Pas 2">
+            </div>
+            <div class="step-content">
+                <h3>Pas 2: Decúbit supí</h3>
+                <p>Estireu-vos ràpidament, mantenint el cap girat 45° i lleugerament estès cap enrere. Manteniu aquesta posició durant 30 segons.</p>
+            </div>
+        </div>
+        
+        <div class="treatment-step">
+            <div class="step-image">
+                <img src="/api/placeholder/120/120" alt="Pas 3">
+            </div>
+            <div class="step-content">
+                <h3>Pas 3: Gir de cap</h3>
+                <p>Gireu el cap 90° cap al costat contrari, sense moure la resta del cos. Manteniu aquesta posició durant 30 segons.</p>
+            </div>
+        </div>
+        
+        <div class="treatment-step">
+            <div class="step-image">
+                <img src="/api/placeholder/120/120" alt="Pas 4">
+            </div>
+            <div class="step-content">
+                <h3>Pas 4: Gir complet</h3>
+                <p>Gireu tot el cos cap al mateix costat on teniu el cap, quedant de costat. Manteniu aquesta posició durant 30 segons.</p>
+            </div>
+        </div>
+        
+        <div class="treatment-step">
+            <div class="step-image">
+                <img src="/api/placeholder/120/120" alt="Pas 5">
+            </div>
+            <div class="step-content">
+                <h3>Pas 5: Retorn a la posició asseguda</h3>
+                <p>Torneu lentament a la posició asseguda amb el cap lleugerament inclinat cap endavant.</p>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="restart-btn">Tornar a l'inici</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Aquesta aplicació no substitueix l'avaluació mèdica professional. Si teniu símptomes greus o persistents, consulteu amb un professional sanitari.</p>
+    </footer>
+
+    <script>
+        // Variables globals
+        let currentQuestion = 1;
+        const totalQuestions = 5;
+        let answers = [0, 0, 0, 0, 0];
+        
+        // Elements del DOM
+        const questionsSection = document.getElementById('questions-section');
+        const positiveResult = document.getElementById('positive-result');
+        const negativeResult = document.getElementById('negative-result');
+        const treatmentSection = document.getElementById('treatment-section');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const treatmentBtn = document.getElementById('treatment-btn');
+        const restartBtns = document.querySelectorAll('.restart-btn');
+        const questionsNav = document.getElementById('questions-nav');
+        
+        // Inicialització
+        window.onload = function() {
+            setupQuestionNavigation();
+            setupOptionButtons();
+            setupActionButtons();
+            updateQuestionNavigation();
+        };
+        
+        // Configuració dels botons d'opcions (Sí/No)
+        function setupOptionButtons() {
+            const optionButtons = document.querySelectorAll('.option-btn');
+            
+            optionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Eliminar classe 'selected' dels altres botons del mateix grup
+                    const parentOptions = this.parentElement;
+                    parentOptions.querySelectorAll('.option-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    // Afegir classe 'selected' al botó clicat
+                    this.classList.add('selected');
+                    
+                    // Guardar la resposta
+                    const questionNumber = parseInt(this.closest('.question').id.replace('q', '')) - 1;
+                    answers[questionNumber] = parseInt(this.getAttribute('data-value'));
+                    
+                    // Si és l'última pregunta, mostrar resultats
+                    if (currentQuestion === totalQuestions) {
+                        nextBtn.textContent = 'Veure resultats';
+                    } else {
+                        nextBtn.textContent = 'Següent';
+                    }
+                });
+            });
+        }
+        
+        // Configuració dels botons de navegació entre preguntes
+        function setupQuestionNavigation() {
+            questionsNav.classList.remove('hidden');
+            
+            prevBtn.addEventListener('click', function() {
+                if (currentQuestion > 1) {
+                    showQuestion(currentQuestion - 1);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentQuestion < totalQuestions) {
+                    // Comprovar si s'ha respost la pregunta actual
+                    const currentQuestionElement = document.getElementById(`q${currentQuestion}`);
+                    const selectedOption = currentQuestionElement.querySelector('.option-btn.selected');
+                    
+                    if (selectedOption) {
+                        showQuestion(currentQuestion + 1);
+                    } else {
+                        alert('Si us plau, seleccioneu una opció per continuar.');
+                    }
+                } else {
+                    // Comprovar si s'ha respost l'última pregunta
+                    const lastQuestionElement = document.getElementById(`q${totalQuestions}`);
+                    const selectedOption = lastQuestionElement.querySelector('.option-btn.selected');
+                    
+                    if (selectedOption) {
+                        showResults();
+                    } else {
+                        alert('Si us plau, seleccioneu una opció per continuar.');
+                    }
+                }
+            });
+        }
+        
+        // Configuració d'altres botons d'acció
+        function setupActionButtons() {
+            treatmentBtn.addEventListener('click', function() {
+                positiveResult.classList.add('hidden');
+                treatmentSection.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            });
+            
+            restartBtns.forEach(button => {
+                button.addEventListener('click', function() {
+                    resetApp();
+                });
+            });
+        }
+        
+        // Mostrar una pregunta específica
+        function showQuestion(questionNumber) {
+            // Amagar totes les preguntes
+            for (let i = 1; i <= totalQuestions; i++) {
+                document.getElementById(`q${i}`).classList.add('hidden');
+            }
+            
+            // Mostrar la pregunta sol·licitada
+            document.getElementById(`q${questionNumber}`).classList.remove('hidden');
+            
+            // Actualitzar la pregunta actual
+            currentQuestion = questionNumber;
+            
+            // Actualitzar la navegació
+            updateQuestionNavigation();
+        }
+        
+        // Actualitzar els botons de navegació segons la pregunta actual
+        function updateQuestionNavigation() {
+            if (currentQuestion === 1) {
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.disabled = false;
+            }
+            
+            if (currentQuestion === totalQuestions) {
+                const lastQuestionElement = document.getElementById(`q${totalQuestions}`);
+                const selectedOption = lastQuestionElement.querySelector('.option-btn.selected');
+                
+                if (selectedOption) {
+                    nextBtn.textContent = 'Veure resultats';
+                }
+            } else {
+                nextBtn.textContent = 'Següent';
+            }
+        }
+        
+        // Mostrar els resultats segons les respostes
+        function showResults() {
+            const totalScore = answers.reduce((sum, value) => sum + value, 0);
+            
+            questionsSection.classList.add('hidden');
+            
+            if (totalScore >= 3) {
+                positiveResult.classList.remove('hidden');
+            } else {
+                negativeResult.classList.remove('hidden');
+            }
+            
+            window.scrollTo(0, 0);
+        }
+        
+        // Reiniciar l'aplicació
+        function resetApp() {
+            // Reiniciar les respostes
+            answers = [0, 0, 0, 0, 0];
+            
+            // Reiniciar els botons seleccionats
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Amagar totes les seccions excepte preguntes
+            positiveResult.classList.add('hidden');
+            negativeResult.classList.add('hidden');
+            treatmentSection.classList.add('hidden');
+            
+            // Mostrar la primera pregunta
+            showQuestion(1);
+            questionsSection.classList.remove('hidden');
+            
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
 </html>
