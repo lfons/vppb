@@ -95,11 +95,18 @@
         
         .treatment-step {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             margin-bottom: 30px;
             background-color: #f9f9f9;
             padding: 15px;
             border-radius: 8px;
+        }
+        
+        @media (min-width: 600px) {
+            .treatment-step {
+                flex-direction: row;
+                align-items: center;
+            }
         }
         
         .step-image {
@@ -107,10 +114,23 @@
             height: 120px;
             background-color: #e0e0e0;
             border-radius: 5px;
-            margin-right: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        @media (min-width: 600px) {
+            .step-image {
+                margin-right: 20px;
+                margin-bottom: 0;
+            }
+        }
+        
+        .step-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
         
         .step-content {
@@ -136,6 +156,57 @@
             margin-top: 30px;
             color: #7f8c8d;
             font-size: 14px;
+        }
+        
+        /* Modal styles for image enlargement */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80%;
+            padding: 20px 0;
+            animation: zoomIn 0.3s;
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.9); }
+            to { transform: scale(1); }
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -224,10 +295,11 @@
     <div id="treatment-section" class="container hidden">
         <h2>Maniobra d'Epley</h2>
         <p>Seguiu aquests passos per realitzar la maniobra d'Epley. Aquesta maniobra ajuda a reposicionar les partícules de l'orella interna que causen el vertigen.</p>
+        <p><small>Feu clic a qualsevol imatge per ampliar-la.</small></p>
         
         <div class="treatment-step">
             <div class="step-image">
-                <img src="IMG_5396.jpeg" alt="Pas 1">
+                <img src="IMG_5396.jpeg" alt="Pas 1" class="enlargeable-img">
             </div>
             <div class="step-content">
                 <h3>Pas 1: Posició inicial</h3>
@@ -237,7 +309,7 @@
         
         <div class="treatment-step">
             <div class="step-image">
-                <img src="IMG_5395.jpeg" alt="Pas 2">
+                <img src="IMG_5395.jpeg" alt="Pas 2" class="enlargeable-img">
             </div>
             <div class="step-content">
                 <h3>Pas 2: Decúbit supí</h3>
@@ -247,7 +319,7 @@
         
         <div class="treatment-step">
             <div class="step-image">
-                <img src="IMG_5394.jpeg" alt="Pas 3">
+                <img src="IMG_5394.jpeg" alt="Pas 3" class="enlargeable-img">
             </div>
             <div class="step-content">
                 <h3>Pas 3: Gir de cap</h3>
@@ -257,7 +329,7 @@
         
         <div class="treatment-step">
             <div class="step-image">
-                <img src="IMG_5392.jpeg" alt="Pas 4">
+                <img src="IMG_5392.jpeg" alt="Pas 4" class="enlargeable-img">
             </div>
             <div class="step-content">
                 <h3>Pas 4: Gir complet</h3>
@@ -267,7 +339,7 @@
         
         <div class="treatment-step">
             <div class="step-image">
-                <img src="IMG_5391.jpeg" alt="Pas 5">
+                <img src="IMG_5391.jpeg" alt="Pas 5" class="enlargeable-img">
             </div>
             <div class="step-content">
                 <h3>Pas 5: Retorn a la posició asseguda</h3>
@@ -278,6 +350,12 @@
         <div class="navigation">
             <button class="restart-btn">Tornar a l'inici</button>
         </div>
+    </div>
+    
+    <!-- Modal per a les imatges ampliades -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="enlargedImg">
     </div>
     
     <footer>
@@ -301,11 +379,17 @@
         const restartBtns = document.querySelectorAll('.restart-btn');
         const questionsNav = document.getElementById('questions-nav');
         
+        // Elements per al modal d'imatges
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('enlargedImg');
+        const closeModal = document.getElementsByClassName('close')[0];
+        
         // Inicialització
         window.onload = function() {
             setupQuestionNavigation();
             setupOptionButtons();
             setupActionButtons();
+            setupImageModal();
             updateQuestionNavigation();
         };
         
@@ -385,6 +469,28 @@
                 button.addEventListener('click', function() {
                     resetApp();
                 });
+            });
+        }
+        
+        // Configuració del modal per ampliar imatges
+        function setupImageModal() {
+            const images = document.querySelectorAll('.enlargeable-img');
+            
+            images.forEach(img => {
+                img.addEventListener('click', function() {
+                    modal.style.display = 'block';
+                    modalImg.src = this.src;
+                });
+            });
+            
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
             });
         }
         
